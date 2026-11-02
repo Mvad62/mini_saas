@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Статистика — {{ survey.title }}{% endblock %}
+
+{% block navigation %}
+  <a href="/surveys">Мои опросы</a>
+  <form action="/auth/logout" method="post"><button class="button button-secondary" type="submit">Выйти</button></form>
+{% endblock %}
+
+{% block content %}
+  <section class="content-card">
+    <div class="section-heading">
+      <div>
+        <h1>Статистика: {{ survey.title }}</h1>
+        {% if survey.description %}<p class="survey-description">{{ survey.description }}</p>{% endif %}
+      </div>
+      <div class="survey-actions">
+        <a class="button button-secondary" href="/surveys/{{ survey.id }}/stats.csv">Скачать CSV</a>
+        <a class="button button-secondary" href="/surveys/{{ survey.id }}/edit">Редактировать опрос</a>
+      </div>
+    </div>
+    <div class="response-total">
+      <strong>{{ statistics.total_responses }}</strong>
+      <span>ответов</span>
+    </div>
+
+    <section class="analytics-section">
+      <h2>Результаты по вопросам</h2>
+      {% if statistics.questions %}
+        <div class="analytics-question-list">
+          {% for question in statistics.questions %}
+            <article class="analytics-question">
+              <h3>{{ loop.index }}. {{ question.text }}</h3>
+              {% if question.question_type.value == "text" %}
+                <h4>Последние ответы</h4>
+                {% if question.text_answers %}
+                  <ul class="text-answer-list">
+                    {% for answer in question.text_answers %}
+                      <li>
+                        <blockquote>{{ answer.value }}</blockquote>
+                        <time>{{ answer.submitted_at.strftime("%d.%m.%Y %H:%M") }}</time>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                {% else %}
+                  <p>Пока нет текстовых ответов.</p>
+                {% endif %}
+              {% else %}
+                <div class="chart-container">
+                  <canvas
+                    data-chart-type="{{ 'pie' if question.question_type.value == 'single' else 'bar' }}"
+                    data-chart-labels="{{ question.options | map(attribute='text') | list | tojson | forceescape }}"
+                    data-chart-values="{{ question.options | map(attribute='response_count') | list | tojson | forceescape }}"
+                    role="img"
+                    aria-label="Распределение ответов: {{ question.text }}"
+                  ></canvas>
+                </div>
+                <div class="table-scroll">
+                  <table>
+                    <thead>
+                      <tr><th>Вариант</th><th>Ответов</th></tr>
+                    </thead>
+                    <tbody>
+                      {% for option in question.options %}
+                        <tr><td>{{ option.text }}</td><td>{{ option.response_count }}</td></tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              {% endif %}
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>В опросе пока нет вопросов.</p>
+      {% endif %}
+    </section>
+
+    <section class="analytics-section">
+      <h2>Последние отправки</h2>
+      {% if statistics.recent_responses %}
+        <ol class="recent-response-list">
+          {% for response in statistics.recent_responses %}
+            <li class="recent-response">
+              <h3>Ответ от {{ response.submitted_at.strftime("%d.%m.%Y %H:%M") }}</h3>
+              {% if response.answers %}
+                <dl>
+                  {% for answer in response.answers %}
+                    <dt>{{ answer.question_text }}</dt>
+                    <dd>{{ answer.value if answer.value else "—" }}</dd>
+                  {% endfor %}
+                </dl>
+              {% else %}
+                <p>Нет заполненных ответов.</p>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ol>
+      {% else %}
+        <p>Пока нет отправленных ответов.</p>
+      {% endif %}
+    </section>
+  </section>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+  <script src="{{ url_for('static', path='/js/survey-stats.js') }}" defer></script>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}{{ survey.title }} — Опрос{% endblock %}
+
+{% block content %}
+  <section class="content-card public-survey">
+    <h1>{{ survey.title }}</h1>
+    {% if survey.description %}<p class="survey-description">{{ survey.description }}</p>{% endif %}
+    <form action="/survey/{{ survey.slug }}/submit" method="post" class="survey-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      {% for question in survey.questions %}
+        <fieldset class="public-question">
+          <legend>
+            {{ question.text }}
+            {% if question.is_required %}<span class="required-mark" aria-label="Обязательный вопрос">*</span>{% endif %}
+          </legend>
+          {% if question.type.value == "single" %}
+            {% for option in question.options %}
+              <label class="answer-option">
+                <input
+                  type="radio"
+                  name="question_{{ question.id }}"
+                  value="{{ option.id }}"
+                  {% if question.is_required %}required{% endif %}
+                  {% if option.id|string in submitted.get(question.id, []) %}checked{% endif %}
+                >
+                {{ option.text }}
+              </label>
+            {% endfor %}
+          {% elif question.type.value == "multiple" %}
+            {% for option in question.options %}
+              <label class="answer-option">
+                <input
+                  type="checkbox"
+                  name="question_{{ question.id }}"
+                  value="{{ option.id }}"
+                  {% if option.id|string in submitted.get(question.id, []) %}checked{% endif %}
+                >
+                {{ option.text }}
+              </label>
+            {% endfor %}
+          {% else %}
+            <textarea
+              name="question_{{ question.id }}"
+              rows="4"
+              maxlength="10000"
+              {% if question.is_required %}required{% endif %}
+            >{{ submitted.get(question.id, [""])[0] }}</textarea>
+          {% endif %}
+        </fieldset>
+      {% endfor %}
+      <button type="submit">Отправить ответы</button>
+    </form>
+  </section>
+{% endblock %}

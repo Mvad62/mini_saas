@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Мои опросы — Mini SaaS{% endblock %}
+
+{% block navigation %}
+  <span>Вы вошли как {{ current_user.name }}</span>
+  <a class="button button-secondary" href="/surveys/new">Создать опрос</a>
+  <form action="/auth/logout" method="post"><button class="button button-secondary" type="submit">Выйти</button></form>
+{% endblock %}
+
+{% block content %}
+  <section class="content-card">
+    <div class="section-heading">
+      <h1>Мои опросы</h1>
+      <a class="button" href="/surveys/new">Создать опрос</a>
+    </div>
+    {% if surveys %}
+      <ul class="survey-list">
+        {% for survey in surveys %}
+          <li class="survey-item">
+            <div>
+              <h2><a href="/surveys/{{ survey.id }}/edit">{{ survey.title }}</a></h2>
+              {% if survey.description %}<p>{{ survey.description }}</p>{% endif %}
+              <small>Создан: {{ survey.created_at.strftime("%d.%m.%Y %H:%M") }}</small>
+              <div class="share-link">
+                <a href="{{ request.base_url }}survey/{{ survey.slug }}" target="_blank" rel="noopener noreferrer">
+                  {{ request.base_url }}survey/{{ survey.slug }}
+                </a>
+                <button class="button button-secondary" type="button" data-copy-url="{{ request.base_url }}survey/{{ survey.slug }}">
+                  Копировать ссылку
+                </button>
+                <span data-copy-status aria-live="polite"></span>
+              </div>
+            </div>
+            <div class="survey-actions">
+              <a class="button button-secondary" href="/surveys/{{ survey.id }}/stats">Статистика</a>
+              <a class="button button-secondary" href="/surveys/{{ survey.id }}/edit">Редактировать</a>
+              <form action="/surveys/{{ survey.id }}/delete" method="post" onsubmit="return confirm('Удалить этот опрос?');">
+                <button class="button button-danger" type="submit">Удалить</button>
+              </form>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>Пока нет опросов. Создайте первый.</p>
+    {% endif %}
+  </section>
+  <script src="{{ url_for('static', path='/js/survey-list.js') }}" defer></script>
+{% endblock %}

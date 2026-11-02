@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}Ответ отправлен — {{ survey.title }}{% endblock %}
+
+{% block content %}
+  <section class="content-card public-survey">
+    <h1>Спасибо за ответы!</h1>
+    <p>Ваш ответ на опрос «{{ survey.title }}» сохранён.</p>
+  </section>
+{% endblock %}

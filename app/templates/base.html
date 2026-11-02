@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
+    <title>{% block title %}Mini SaaS для опросов{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
+  </head>
+  <body>
+    <main class="page">
+      <header class="site-header">
+        <a class="brand" href="/surveys">Mini SaaS для опросов</a>
+        <nav class="site-navigation" aria-label="Основная навигация">
+          {% block navigation %}{% endblock %}
+        </nav>
+      </header>
+      {% if flash_message %}
+        <p class="flash-message flash-{{ flash_message.type }}" role="status">
+          {{ flash_message.message }}
+        </p>
+      {% endif %}
+      {% for error in errors | default([]) %}
+        <p class="error flash-message" role="alert">{{ error }}</p>
+      {% endfor %}
+      {% block content %}{% endblock %}
+    </main>
+  </body>
+</html>

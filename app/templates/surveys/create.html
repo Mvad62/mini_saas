@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Новый опрос — Mini SaaS{% endblock %}
+
+{% block navigation %}
+  <a href="/surveys">Мои опросы</a>
+  <form action="/auth/logout" method="post"><button class="button button-secondary" type="submit">Выйти</button></form>
+{% endblock %}
+
+{% block content %}
+  <section class="content-card">
+    <h1>Создать опрос</h1>
+    {% set action = "/surveys" %}
+    {% set submit_label = "Создать опрос" %}
+    {% include "surveys/_form.html" %}
+  </section>
+{% endblock %}

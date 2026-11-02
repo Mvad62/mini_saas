@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Редактировать опрос — Mini SaaS{% endblock %}
+
+{% block navigation %}
+  <a href="/surveys">Мои опросы</a>
+  <form action="/auth/logout" method="post"><button class="button button-secondary" type="submit">Выйти</button></form>
+{% endblock %}
+
+{% block content %}
+  <section class="content-card">
+    <h1>Редактировать опрос</h1>
+    {% set action = "/surveys/" ~ survey.id %}
+    {% set submit_label = "Сохранить изменения" %}
+    {% include "surveys/_form.html" %}
+  </section>
+{% endblock %}

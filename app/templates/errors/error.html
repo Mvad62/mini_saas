@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Ошибка {{ status_code }} — Mini SaaS{% endblock %}
+
+{% block content %}
+  <section class="content-card error-page">
+    <p class="error-code">{{ status_code }}</p>
+    <h1>{{ message }}</h1>
+    {% if status_code == 404 %}
+      <p>Проверьте ссылку или вернитесь к началу.</p>
+    {% elif status_code == 403 %}
+      <p>Если вы считаете, что это ошибка, обновите страницу и попробуйте снова.</p>
+    {% endif %}
+    <a class="button" href="/surveys">Перейти к опросам</a>
+  </section>
+{% endblock %}
