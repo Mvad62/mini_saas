@@ -1,6 +1,6 @@
 # Mini SaaS для опросов
 
-Учебный проект на FastAPI, SQLAlchemy 2.x (async), SQLite и Jinja2.
+Проект на FastAPI, SQLAlchemy 2.x (async), SQLite и Jinja2.
 
 ## Запуск
 
